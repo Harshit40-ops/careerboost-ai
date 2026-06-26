@@ -1,0 +1,36 @@
+# ── Web framework ─────────────────────────────────────────────
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20          # needed for file uploads / form data
+
+# ── Database ──────────────────────────────────────────────────
+SQLAlchemy==2.0.36
+
+# ── Auth (JWT + password hashing) ─────────────────────────────
+python-jose[cryptography]==3.3.0
+bcrypt==4.2.1                      # used directly (no passlib wrapper)
+
+# ── Settings / validation ─────────────────────────────────────
+pydantic==2.10.4
+pydantic-settings==2.7.0
+email-validator==2.2.0            # enables pydantic EmailStr
+
+# ── Resume parsing (Layer 1) ──────────────────────────────────
+pdfplumber==0.11.4
+PyMuPDF==1.25.1
+python-docx==1.1.2
+
+# ── Semantic embeddings (Layer 2) ─────────────────────────────
+# OPTIONAL: sentence-transformers pulls in torch (~1 GB) which is too heavy for
+# most free hosting tiers, so it is commented out for deployment. The app still
+# runs perfectly — Layer 2 gracefully falls back to a lightweight, pure-Python
+# TF-IDF similarity. To enable real embeddings locally (Python 3.11/3.12):
+#   pip install sentence-transformers==3.3.1
+# sentence-transformers==3.3.1
+
+# ── LLM scoring (Layer 3) ─────────────────────────────────────
+anthropic==0.42.0                 # Claude API (primary)
+openai==1.59.6                    # optional alternative provider
+
+# ── Misc ──────────────────────────────────────────────────────
+python-dotenv==1.0.1

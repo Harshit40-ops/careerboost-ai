@@ -1,0 +1,121 @@
+/* Tailwind's base, component, and utility layers. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Global futuristic dark theme ── */
+@layer base {
+  body {
+    @apply bg-[#070712] text-slate-200 antialiased;
+  }
+}
+
+/* Reusable button + card styles so pages stay tidy. */
+@layer components {
+  /* Glowing primary action button. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg
+           bg-gradient-to-r from-brand-600 to-fuchsia-600 px-5 py-2.5
+           font-medium text-white shadow-lg shadow-brand-600/30 transition
+           hover:from-brand-500 hover:to-fuchsia-500 hover:shadow-brand-500/40
+           disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  /* Ghost button tuned for dark backgrounds. */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-lg border
+           border-white/15 px-5 py-2.5 font-medium text-slate-200
+           backdrop-blur transition hover:bg-white/10;
+  }
+  /* Glassy card: translucent dark panel with a soft glowing edge. */
+  .card {
+    @apply rounded-2xl border border-white/10 bg-white/[0.04] p-6
+           shadow-xl shadow-black/30 backdrop-blur-xl;
+  }
+  .input {
+    @apply w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5
+           text-slate-100 placeholder-slate-500 outline-none transition
+           focus:border-brand-400 focus:ring-2 focus:ring-brand-500/30;
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium text-slate-300;
+  }
+}
+
+/* ── Keyframe animations for the futuristic background & loader ── */
+@layer utilities {
+  /* Slowly drifting glowing orbs. */
+  @keyframes blob {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -30px) scale(1.1); }
+    66% { transform: translate(-30px, 30px) scale(0.95); }
+  }
+  .animate-blob { animation: blob 18s ease-in-out infinite; }
+
+  /* Indeterminate loading bar sweep. */
+  @keyframes loadingbar {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+  }
+
+  /* Subtle vertical drift for the grid so it feels alive. */
+  @keyframes gridmove {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 40px; }
+  }
+  .animate-grid { animation: gridmove 6s linear infinite; }
+
+  .animation-delay-2000 { animation-delay: 2s; }
+  .animation-delay-4000 { animation-delay: 4s; }
+}
+
+/* ── Neon animated gradient border (futuristic cards) ── */
+/* The --angle custom property lets us smoothly rotate a conic-gradient. */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spin-border {
+  to { --angle: 360deg; }
+}
+.neon-border {
+  position: relative;
+}
+.neon-border::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle),
+    rgba(99, 102, 241, 0),
+    #6366f1,
+    #d946ef,
+    #22d3ee,
+    rgba(99, 102, 241, 0)
+  );
+  /* Mask trick: show the gradient only on the 1.5px border ring. */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin-border 5s linear infinite;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+/* ── Resume "scan-line" animation ── */
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(220px); }
+}
+.scan-line {
+  animation: scanline 1.6s ease-in-out infinite alternate;
+}
+
+/* ── Tilt cards: smooth return when the mouse leaves ── */
+.tilt-card {
+  transition: transform 150ms ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}

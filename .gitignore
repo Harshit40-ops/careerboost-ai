@@ -1,0 +1,17 @@
+# ── Python ──
+backend/.venv/
+__pycache__/
+*.pyc
+backend/*.db
+backend/.env
+
+# ── Node / frontend ──
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# ── Editor / OS ──
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

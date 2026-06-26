@@ -1,0 +1,35 @@
+# render.yaml — Render Blueprint for the CareerBoost AI backend (FastAPI).
+# In Render: New → Blueprint → connect this repo. Render reads this file.
+#
+# After the first deploy, set the secret env vars (OPENAI_API_KEY, CORS_ORIGINS)
+# in the Render dashboard — see DEPLOYMENT.md.
+
+services:
+  - type: web
+    name: careerboost-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # Use a Python that has prebuilt wheels for all deps.
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      # Auto-generate a strong JWT secret.
+      - key: SECRET_KEY
+        generateValue: true
+      # LLM provider (Groq via the OpenAI-compatible API).
+      - key: LLM_PROVIDER
+        value: openai
+      - key: OPENAI_MODEL
+        value: llama-3.3-70b-versatile
+      - key: OPENAI_BASE_URL
+        value: https://api.groq.com/openai/v1
+      # Secrets you fill in the dashboard (sync:false = not stored in git):
+      - key: OPENAI_API_KEY
+        sync: false
+      # Comma-separated list of your frontend origin(s), e.g.
+      #   https://careerboost-harshit.vercel.app
+      - key: CORS_ORIGINS
+        sync: false
