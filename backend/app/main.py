@@ -32,6 +32,7 @@ from .routers import (
     practice,
     resume,
     reviews,
+    stats,
 )
 from .services import embeddings
 
@@ -79,6 +80,7 @@ app.include_router(notes.router)
 app.include_router(code.router)
 app.include_router(practice.router)
 app.include_router(reviews.router)
+app.include_router(stats.router)
 app.include_router(dashboard.router)
 
 

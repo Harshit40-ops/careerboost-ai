@@ -4,7 +4,7 @@
 // Navbar, footer). Also shows a futuristic loading splash on first boot.
 
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import FuturisticBackground from "./components/FuturisticBackground.jsx";
 import LoadingScreen from "./components/LoadingScreen.jsx";
 import Navbar from "./components/Navbar.jsx";
@@ -23,6 +23,7 @@ import Notes from "./pages/Notes.jsx";
 import Practice from "./pages/Practice.jsx";
 import Register from "./pages/Register.jsx";
 import Reviews from "./pages/Reviews.jsx";
+import Stats from "./pages/Stats.jsx";
 
 export default function App() {
   // Show the splash screen briefly on first load for a polished entry.
@@ -114,6 +115,7 @@ export default function App() {
           {/* Converters & Reviews are public — no login required. */}
           <Route path="/converters" element={<Converters />} />
           <Route path="/reviews" element={<Reviews />} />
+          <Route path="/stats" element={<Stats />} />
           <Route
             path="/dashboard"
             element={
@@ -131,6 +133,10 @@ export default function App() {
           <span className="bg-gradient-to-r from-brand-300 to-fuchsia-300 bg-clip-text font-semibold text-transparent">
             Harshit Sharma
           </span>
+          {" · "}
+          <Link to="/stats" className="text-slate-500 hover:text-brand-300">
+            Stats
+          </Link>
         </p>
       </footer>
     </div>

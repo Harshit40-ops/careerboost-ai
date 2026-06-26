@@ -93,6 +93,9 @@ export const api = {
   markSolved: (slug) => request(`/practice/problems/${slug}/solved`, { method: "POST" }),
   practiceProgress: () => request("/practice/progress"),
 
+  // Founder stats
+  getStats: () => request("/stats"),
+
   // Reviews & ratings
   listReviews: () => request("/reviews"),
   reviewSummary: () => request("/reviews/summary"),
