@@ -4,7 +4,9 @@
 // the platform). Public read-only — no personal data.
 
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../api";
+import { useAuth } from "../auth.jsx";
 import Spinner from "../components/Spinner.jsx";
 import TiltCard from "../components/TiltCard.jsx";
 
@@ -20,20 +22,43 @@ const CARDS = [
 ];
 
 export default function Stats() {
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
 
   function load() {
-    api.getStats().then(setData).catch((e) => setError(e.message));
+    api.getStats().then((d) => { setData(d); setError(""); }).catch((e) => setError(e.message));
   }
   useEffect(() => {
+    if (!user) return; // don't call the API if not logged in
     load();
     const t = setInterval(load, 15000); // refresh every 15s
     return () => clearInterval(t);
-  }, []);
+  }, [user]);
 
+  // Not logged in → ask to log in.
+  if (!user)
+    return (
+      <div className="card mx-auto max-w-md text-center">
+        <div className="text-5xl">🔒</div>
+        <h1 className="mt-3 text-2xl font-bold">Founder only</h1>
+        <p className="mt-2 text-slate-400">
+          Ye page sirf founder ke liye hai. Apne founder account se login karo.
+        </p>
+        <Link to="/login" className="btn-primary mt-4 inline-block">Log in</Link>
+      </div>
+    );
+
+  // Logged in but not the founder (403), or any error.
   if (error)
-    return <div className="rounded-lg bg-red-500/15 px-4 py-3 text-sm text-red-300">{error}</div>;
+    return (
+      <div className="card mx-auto max-w-md text-center">
+        <div className="text-5xl">⛔</div>
+        <h1 className="mt-3 text-2xl font-bold">Access denied</h1>
+        <p className="mt-2 text-slate-400">{error}</p>
+      </div>
+    );
+
   if (!data) return <Spinner label="Loading stats…" />;
 
   return (

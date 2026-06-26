@@ -7,10 +7,12 @@ Public, aggregate usage stats for the founder — just counts, no personal data.
                 reviews (+ average rating), and problems solved.
 """
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from ..auth import get_current_user
+from ..config import settings
 from ..database import get_db
 from ..models import (
     Analysis,
@@ -26,7 +28,16 @@ router = APIRouter(prefix="/stats", tags=["stats"])
 
 
 @router.get("")
-def stats(db: Session = Depends(get_db)):
+def stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    # Founder-only: must be logged in AND match the configured founder email.
+    if current_user.email.lower() != settings.FOUNDER_EMAIL.lower():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="These stats are private to the founder.",
+        )
     avg_rating = db.query(func.avg(Review.rating)).scalar()
     return {
         "users": db.query(User).count(),

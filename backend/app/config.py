@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     LLM_WEIGHT: float = 0.7
     EMBEDDING_WEIGHT: float = 0.3
 
+    # --- Founder/admin ---
+    # Only this account (when logged in) can view the /stats founder dashboard.
+    FOUNDER_EMAIL: str = "saytoharshitsharma@gmail.com"
+
     # --- CORS ---
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 
