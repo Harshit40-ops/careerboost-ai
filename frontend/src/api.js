@@ -3,7 +3,10 @@
 // A tiny wrapper around fetch() so every component talks to the backend the
 // same way. It automatically attaches the JWT token and parses JSON / errors.
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+// Empty string => same-origin (relative) requests, used when the backend also
+// serves the built frontend. In local dev, .env.development points this at the
+// separate FastAPI dev server on :8000.
+const BASE_URL = import.meta.env.VITE_API_URL ?? "";
 
 // Read/store the token in localStorage so a refresh keeps the user logged in.
 export const tokenStore = {
