@@ -20,6 +20,10 @@ pdfplumber==0.11.4
 PyMuPDF==1.25.1
 python-docx==1.1.2
 
+# ── File converters (PDF <-> DOCX) ────────────────────────────
+pdf2docx==0.5.13                  # PDF -> DOCX
+reportlab==5.0.0                  # DOCX -> PDF (pure-Python renderer)
+
 # ── Semantic embeddings (Layer 2) ─────────────────────────────
 # OPTIONAL: sentence-transformers pulls in torch (~1 GB) which is too heavy for
 # most free hosting tiers, so it is commented out for deployment. The app still
