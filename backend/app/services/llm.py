@@ -111,16 +111,29 @@ def _call_openai(prompt: str) -> str:
 
     # If OPENAI_BASE_URL is set we talk to an OpenAI-COMPATIBLE provider
     # (Groq, OpenRouter, Gemini's OpenAI endpoint, ...). Otherwise real OpenAI.
-    kwargs = {"api_key": settings.OPENAI_API_KEY}
+    # max_retries makes the SDK automatically wait + retry on rate limits (429)
+    # and transient 5xx errors, so a busy free tier doesn't drop us to the mock.
+    kwargs = {"api_key": settings.OPENAI_API_KEY, "max_retries": 5, "timeout": 60}
     if settings.OPENAI_BASE_URL:
         kwargs["base_url"] = settings.OPENAI_BASE_URL
     client = OpenAI(**kwargs)
-    resp = client.chat.completions.create(
-        model=settings.OPENAI_MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=1500,
-    )
-    return resp.choices[0].message.content
+
+    # If the primary model is rate-limited, fall back to faster models that have
+    # higher free-tier limits before giving up to the mock.
+    models = [settings.OPENAI_MODEL, "llama-3.1-8b-instant", "gemma2-9b-it"]
+    last_err = None
+    for model in dict.fromkeys(models):  # de-dupe, keep order
+        try:
+            resp = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1500,
+            )
+            return resp.choices[0].message.content
+        except Exception as exc:  # try the next model on failure
+            last_err = exc
+            continue
+    raise last_err
 
 
 def _call_llm(prompt: str) -> str:
