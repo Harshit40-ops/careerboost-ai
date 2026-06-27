@@ -74,23 +74,68 @@ Return ONLY valid JSON, no extra text:
 def _extract_json(text: str) -> Dict[str, Any]:
     """
     Parse JSON out of a model response.
-    Tries straight json.loads first; if that fails, strips ```json fences and
-    grabs the first {...} block, then retries once.
+
+    LLMs often return JSON whose string values (e.g. generated code) contain raw
+    newlines/tabs — which standard JSON forbids. We therefore parse with
+    `strict=False`, which allows control characters inside strings. We try the
+    raw text first, then the fenced/brace-trimmed version.
     """
+    # 1) Try the text as-is (strict=False tolerates raw newlines in strings).
     try:
-        return json.loads(text)
+        return json.loads(text, strict=False)
     except (json.JSONDecodeError, TypeError):
         pass
 
-    # Strip code fences like ```json ... ```
+    # 2) Strip ```json fences and grab the outermost { ... } region.
     cleaned = re.sub(r"```(?:json)?", "", text).strip("` \n")
-
-    # Grab the outermost { ... } region.
     start, end = cleaned.find("{"), cleaned.rfind("}")
     if start != -1 and end != -1 and end > start:
         cleaned = cleaned[start : end + 1]
 
-    return json.loads(cleaned)  # may raise; caller handles it
+    try:
+        return json.loads(cleaned, strict=False)
+    except (json.JSONDecodeError, TypeError):
+        pass
+
+    # 3) Last resort: escape stray newlines/tabs that sit INSIDE quoted strings,
+    #    then parse. This rescues responses with badly-formatted multi-line code.
+    return json.loads(_escape_control_chars_in_strings(cleaned), strict=False)
+
+
+def _escape_control_chars_in_strings(text: str) -> str:
+    """Escape raw newlines/tabs/CRs that appear inside double-quoted strings."""
+    out = []
+    in_str = False
+    escaped = False
+    for ch in text:
+        if in_str:
+            if escaped:
+                out.append(ch)
+                escaped = False
+                continue
+            if ch == "\\":
+                out.append(ch)
+                escaped = True
+                continue
+            if ch == '"':
+                in_str = False
+                out.append(ch)
+                continue
+            if ch == "\n":
+                out.append("\\n")
+                continue
+            if ch == "\r":
+                out.append("\\r")
+                continue
+            if ch == "\t":
+                out.append("\\t")
+                continue
+            out.append(ch)
+        else:
+            if ch == '"':
+                in_str = True
+            out.append(ch)
+    return "".join(out)
 
 
 # ─────────────────────── Provider call wrappers ─────────────────────
