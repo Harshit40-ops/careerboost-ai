@@ -193,9 +193,7 @@ export default function ProblemView({ slug, onBack, onSolved }) {
           {/* Output area */}
           <div className="mt-3">
             {mode === "run" && (
-              <div className="h-48">
-                <CodeOutput language={language} code={code} runId={runId} />
-              </div>
+              <CodeOutput language={language} code={code} runId={runId} />
             )}
 
             {mode === "judge" && (

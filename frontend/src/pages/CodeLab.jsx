@@ -190,9 +190,7 @@ export default function CodeLab() {
         {/* Output */}
         <div className="card flex flex-col">
           <h3 className="mb-3 font-semibold text-white">Output</h3>
-          <div className="flex-1">
-            <CodeOutput language={language} code={code} runId={runId} />
-          </div>
+          <CodeOutput language={language} code={code} runId={runId} />
           <p className="mt-2 text-xs text-slate-500">
             Runs in your browser · Python, JavaScript & HTML supported.
           </p>

@@ -328,6 +328,12 @@ Target language: {language}
 Student's request:
 {prompt}
 
+IMPORTANT: The code is run directly in the browser, so it MUST produce visible
+output. Always end the code with a small demonstration that PRINTS results —
+use print() for Python, console.log() for JavaScript. If you define a function,
+also call it with sample inputs and print the returned value. (For "explain"
+mode, keep the original code but you may add a print/console.log demo.)
+
 Return ONLY valid JSON, no extra text or markdown fences:
 {{
   "language": "<language used>",
