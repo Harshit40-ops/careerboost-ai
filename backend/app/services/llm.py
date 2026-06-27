@@ -151,7 +151,7 @@ def _call_anthropic(prompt: str) -> str:
     return msg.content[0].text
 
 
-def _call_openai(prompt: str) -> str:
+def _call_openai(prompt: str, json_mode: bool = False) -> str:
     from openai import OpenAI
 
     # If OPENAI_BASE_URL is set we talk to an OpenAI-COMPATIBLE provider
@@ -163,6 +163,10 @@ def _call_openai(prompt: str) -> str:
         kwargs["base_url"] = settings.OPENAI_BASE_URL
     client = OpenAI(**kwargs)
 
+    # JSON mode forces the model to return strictly valid JSON, eliminating the
+    # parse errors (unescaped quotes / missing commas) that dropped us to mock.
+    extra = {"response_format": {"type": "json_object"}} if json_mode else {}
+
     # If the primary model is rate-limited, fall back to faster models that have
     # higher free-tier limits before giving up to the mock.
     models = [settings.OPENAI_MODEL, "llama-3.1-8b-instant", "gemma2-9b-it"]
@@ -173,6 +177,7 @@ def _call_openai(prompt: str) -> str:
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=1500,
+                **extra,
             )
             return resp.choices[0].message.content
         except Exception as exc:  # try the next model on failure
@@ -181,13 +186,13 @@ def _call_openai(prompt: str) -> str:
     raise last_err
 
 
-def _call_llm(prompt: str) -> str:
+def _call_llm(prompt: str, json_mode: bool = False) -> str:
     """Dispatch to the configured provider and return raw text."""
     provider = settings.LLM_PROVIDER.lower()
     if provider == "anthropic" and settings.ANTHROPIC_API_KEY:
         return _call_anthropic(prompt)
     if provider == "openai" and settings.OPENAI_API_KEY:
-        return _call_openai(prompt)
+        return _call_openai(prompt, json_mode=json_mode)
     # No usable provider configured -> signal caller to use mock.
     raise RuntimeError("no-llm-configured")
 
@@ -200,7 +205,7 @@ def score_resume(resume_text: str, jd_text: str) -> Dict[str, Any]:
     """
     prompt = RUBRIC_PROMPT.format(resume_text=resume_text, jd_text=jd_text)
     try:
-        raw = _call_llm(prompt)
+        raw = _call_llm(prompt, json_mode=True)
         data = _extract_json(raw)
         return _normalise_rubric(data)
     except Exception as exc:
@@ -217,7 +222,7 @@ def generate_questions(role: str, resume_text: str | None, num: int) -> Dict[str
     )
     prompt = INTERVIEW_PROMPT.format(role=role, resume_block=resume_block, num=num)
     try:
-        raw = _call_llm(prompt)
+        raw = _call_llm(prompt, json_mode=True)
         data = _extract_json(raw)
         return _normalise_questions(data)
     except Exception as exc:
@@ -331,7 +336,7 @@ def generate_notes(topic, source_text=None, detail="balanced"):
         topic=topic, detail=detail, source_block=source_block
     )
     try:
-        raw = _call_llm(prompt)
+        raw = _call_llm(prompt, json_mode=True)
         data = _extract_json(raw)
         return _normalise_notes(data, topic)
     except Exception as exc:
