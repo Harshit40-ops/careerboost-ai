@@ -10,7 +10,6 @@ import LoadingScreen from "./components/LoadingScreen.jsx";
 import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Analyzer from "./pages/Analyzer.jsx";
-import CodeLab from "./pages/CodeLab.jsx";
 import Converters from "./pages/Converters.jsx";
 import CoverLetter from "./pages/CoverLetter.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
@@ -20,7 +19,6 @@ import Landing from "./pages/Landing.jsx";
 import Login from "./pages/Login.jsx";
 import MockInterview from "./pages/MockInterview.jsx";
 import Notes from "./pages/Notes.jsx";
-import Practice from "./pages/Practice.jsx";
 import Register from "./pages/Register.jsx";
 import Reviews from "./pages/Reviews.jsx";
 import Stats from "./pages/Stats.jsx";
@@ -85,22 +83,6 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Notes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/code-lab"
-            element={
-              <ProtectedRoute>
-                <CodeLab />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/practice"
-            element={
-              <ProtectedRoute>
-                <Practice />
               </ProtectedRoute>
             }
           />

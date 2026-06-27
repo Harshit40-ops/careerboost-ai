@@ -16,10 +16,6 @@ const GROUPS = [
     ["Dashboard", "/dashboard"],
     ["History", "/history"],
   ]],
-  ["Coding", [
-    ["Code Lab", "/code-lab"],
-    ["Practice Arena", "/practice"],
-  ]],
   ["Interview", [
     ["Mock Interview", "/mock-interview"],
     ["Question Generator", "/interview"],

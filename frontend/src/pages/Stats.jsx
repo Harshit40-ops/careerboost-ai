@@ -13,10 +13,8 @@ import TiltCard from "../components/TiltCard.jsx";
 const CARDS = [
   ["users", "Registered users", "👥"],
   ["analyses", "Resumes analyzed", "📄"],
-  ["problems_solved", "Problems solved", "🧩"],
   ["interviews", "Interview sets", "🎤"],
   ["notes", "Notes generated", "📚"],
-  ["code_snippets", "Code snippets", "👨‍💻"],
   ["reviews", "Reviews", "⭐"],
   ["avg_rating", "Avg rating", "🌟"],
 ];

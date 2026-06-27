@@ -23,13 +23,11 @@ from .config import settings
 from .database import Base, engine
 from .routers import (
     auth,
-    code,
     convert,
     cover_letter,
     dashboard,
     interview,
     notes,
-    practice,
     resume,
     reviews,
     stats,
@@ -77,8 +75,6 @@ app.include_router(interview.router)
 app.include_router(cover_letter.router)
 app.include_router(convert.router)
 app.include_router(notes.router)
-app.include_router(code.router)
-app.include_router(practice.router)
 app.include_router(reviews.router)
 app.include_router(stats.router)
 app.include_router(dashboard.router)
